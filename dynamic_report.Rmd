@@ -1,0 +1,49 @@
+---
+title: "My dynamic report"
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+
+library(tidyverse)
+
+csv_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3D0vho-JD4mG1pKYAzq4H99lq0HDVjgWKD98vFDYk6qrdazM_NmNIqFtmHIh45-cFUqXFPhr6yWha/pub?gid=1423379554&single=true&output=csv"
+
+logged_data <- read_csv(csv_url)
+
+latest_data <- logged_data %>%
+  rename(
+    content_type = `What type of content is this?`,
+    video_length = `How long was the video? (in seconds)`,
+    watched_full = `Did you watch the full video?`,
+    engagement   = `How engaging was the video?`
+  )
+
+avg_engagement <- mean(latest_data$engagement, na.rm = TRUE)
+mean_length <- mean(latest_data$video_length, na.rm = TRUE)
+
+ggplot(latest_data, aes(x = factor(engagement), fill = factor(engagement))) +
+  geom_bar() +
+  scale_fill_brewer(palette = "Set3") + 
+  labs(
+    title = "Engagement Levels",
+    x = "Engagement Score (1–5)",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+ggplot(latest_data, aes(y = content_type, fill = content_type)) +
+  geom_bar() +
+  labs(
+    title = "Content Type Distribution",
+    x = "Number of Observations",
+    y = "Type of Content"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+latest_data %>%
+  summarise(
+    most_common_content = names(sort(table(content_type), decreasing = TRUE)[1]),
+    high_engagement_pct = mean(engagement >= 4, na.rm = TRUE) * 100
+  )
