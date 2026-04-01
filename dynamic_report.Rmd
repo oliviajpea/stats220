@@ -1,49 +1,126 @@
 ---
-title: "My dynamic report"
+title: My dynamic report
 output: html_fragment
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+```
 
+```{css}
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #eef2f3, #ffffff);
+  color: #333;
+  margin: 20px;
+}
+
+h2 {
+  color: #2c7fb8;
+  border-bottom: 2px solid #2c7fb8;
+  padding-bottom: 5px;
+}
+
+ul {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  list-style-type: none;
+}
+
+img {
+  display: block;
+  margin: 20px auto;
+  max-width: 90%;
+  border-radius: 10px;
+}
+```
+
+## 📱 Social Media Video Engagement Analysis
+
+This report explores how different types of social media content perform based on user engagement and video characteristics.  
+The dataset includes observations of video type, length, and engagement ratings.
+
+---
+
+## 📊 Key Summary Insights
+
+```{r}
 library(tidyverse)
 
 csv_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3D0vho-JD4mG1pKYAzq4H99lq0HDVjgWKD98vFDYk6qrdazM_NmNIqFtmHIh45-cFUqXFPhr6yWha/pub?gid=1423379554&single=true&output=csv"
+data <- read_csv(csv_url)
 
-logged_data <- read_csv(csv_url)
-
-latest_data <- logged_data %>%
+data <- data %>%
   rename(
     content_type = `What type of content is this?`,
     video_length = `How long was the video? (in seconds)`,
-    watched_full = `Did you watch the full video?`,
     engagement   = `How engaging was the video?`
   )
 
-avg_engagement <- mean(latest_data$engagement, na.rm = TRUE)
-mean_length <- mean(latest_data$video_length, na.rm = TRUE)
+avg_engagement <- mean(data$engagement, na.rm = TRUE)
+mean_length <- mean(data$video_length, na.rm = TRUE)
+total_responses <- nrow(data)
 
-ggplot(latest_data, aes(x = factor(engagement), fill = factor(engagement))) +
-  geom_bar() +
-  scale_fill_brewer(palette = "Set3") + 
-  labs(
-    title = "Engagement Levels",
-    x = "Engagement Score (1–5)",
-    y = "Count"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-ggplot(latest_data, aes(y = content_type, fill = content_type)) +
-  geom_bar() +
-  labs(
-    title = "Content Type Distribution",
-    x = "Number of Observations",
-    y = "Type of Content"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "none")
-latest_data %>%
-  summarise(
-    most_common_content = names(sort(table(content_type), decreasing = TRUE)[1]),
-    high_engagement_pct = mean(engagement >= 4, na.rm = TRUE) * 100
-  )
+cat("<ul>")
+cat(paste("<li><b>Average engagement score:</b>", round(avg_engagement, 2), "</li>"))
+cat(paste("<li><b>Average video length:</b>", round(mean_length, 1), "seconds</li>"))
+cat(paste("<li><b>Total observations:</b>", total_responses, "</li>"))
+cat("</ul>")
+```
+
+---
+
+## 📈 Engagement Distribution
+
+This chart shows how engagement scores are distributed across all observed videos.
+
+```{r}
+print(
+  ggplot(data, aes(x = factor(engagement), fill = factor(engagement))) +
+    geom_bar() +
+    theme_minimal() +
+    theme(legend.position = "none") +
+    labs(
+      x = "Engagement Score (1–5)",
+      y = "Count",
+      title = "Distribution of Engagement Scores"
+    )
+)
+```
+
+---
+
+## 🎥 Content Type Comparison
+
+This chart highlights which types of content appear most frequently in the dataset.
+
+```{r}
+print(
+  ggplot(data, aes(y = content_type, fill = content_type)) +
+    geom_bar() +
+    theme_minimal() +
+    theme(legend.position = "none") +
+    labs(
+      x = "Count",
+      y = "Content Type",
+      title = "Content Type Distribution"
+    )
+)
+```
+
+---
+
+## 🔍 Dynamic Insights
+
+```{r}
+high_engagement_pct <- mean(data$engagement >= 4, na.rm = TRUE) * 100
+
+cat(paste(
+  "On average, videos received an engagement score of",
+  round(avg_engagement, 2),
+  ". Approximately",
+  round(high_engagement_pct, 1),
+  "% of videos achieved high engagement (scores of 4 or 5)."
+))
+```
