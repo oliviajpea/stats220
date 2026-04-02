@@ -25,14 +25,12 @@ img {
   display: block;
   margin: 20px auto;
   max-width: 90%;
-  border-radius: 10px;
 }
 ```
 
 ## 📱 Social Media Video Engagement Analysis
 
-This report explores how different types of social media content perform based on user engagement and video characteristics.  
-The dataset includes observations of video type, length, and engagement ratings.
+This report analyses social media video data to explore how engagement varies across different types of content and video characteristics.
 
 ---
 
@@ -42,6 +40,7 @@ The dataset includes observations of video type, length, and engagement ratings.
 library(tidyverse)
 
 csv_url <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3D0vho-JD4mG1pKYAzq4H99lq0HDVjgWKD98vFDYk6qrdazM_NmNIqFtmHIh45-cFUqXFPhr6yWha/pub?gid=1423379554&single=true&output=csv"
+
 data <- read_csv(csv_url)
 
 data <- data %>%
@@ -54,11 +53,15 @@ data <- data %>%
 avg_engagement <- mean(data$engagement, na.rm = TRUE)
 mean_length <- mean(data$video_length, na.rm = TRUE)
 total_responses <- nrow(data)
-```
 
-- Average engagement score: **`r round(avg_engagement, 2)`**  
-- Average video length: **`r round(mean_length, 1)` seconds**  
-- Total observations: **`r total_responses`**
+summary_text <- paste(
+  "The average engagement score is", round(avg_engagement, 2), 
+  ". The average video length is", round(mean_length, 1), "seconds.",
+  "There are", total_responses, "observations in this dataset."
+)
+
+summary_text
+```
 
 ---
 
@@ -67,37 +70,33 @@ total_responses <- nrow(data)
 This chart shows how engagement scores are distributed across all observed videos.
 
 ```{r}
-print(
-  ggplot(data, aes(x = factor(engagement), fill = factor(engagement))) +
-    geom_bar() +
-    theme_minimal() +
-    theme(legend.position = "none") +
-    labs(
-      x = "Engagement Score (1–5)",
-      y = "Count",
-      title = "Distribution of Engagement Scores"
-    )
-)
+ggplot(data, aes(x = factor(engagement), fill = factor(engagement))) +
+  geom_bar() +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(
+    x = "Engagement Score (1–5)",
+    y = "Count",
+    title = "Distribution of Engagement Scores"
+  )
 ```
 
 ---
 
-## 🎥 Content Type Comparison
+## 🎥 Content Type Distribution
 
-This chart highlights which types of content appear most frequently in the dataset.
+This chart shows the frequency of different content types in the dataset.
 
 ```{r}
-print(
-  ggplot(data, aes(y = content_type, fill = content_type)) +
-    geom_bar() +
-    theme_minimal() +
-    theme(legend.position = "none") +
-    labs(
-      x = "Count",
-      y = "Content Type",
-      title = "Content Type Distribution"
-    )
-)
+ggplot(data, aes(y = content_type, fill = content_type)) +
+  geom_bar() +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(
+    x = "Count",
+    y = "Content Type",
+    title = "Content Type Distribution"
+  )
 ```
 
 ---
@@ -105,8 +104,12 @@ print(
 ## 🔍 Dynamic Insights
 
 ```{r}
-high_engagement_pct <- mean(data$engagement >= 4, na.rm = TRUE) * 100
-```
+high_engagement <- sum(data$engagement >= 4, na.rm = TRUE)
 
-On average, videos received an engagement score of **`r round(avg_engagement, 2)`**.  
-Approximately **`r round(high_engagement_pct, 1)`%** of videos achieved high engagement (scores of 4 or 5).
+insight_text <- paste(
+  "A total of", high_engagement, "videos had high engagement (scores of 4 or 5).",
+  "This suggests that a noticeable proportion of content performs well."
+)
+
+insight_text
+```
