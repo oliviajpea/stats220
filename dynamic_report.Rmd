@@ -21,13 +21,6 @@ h2 {
   padding-bottom: 5px;
 }
 
-ul {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  list-style-type: none;
-}
-
 img {
   display: block;
   margin: 20px auto;
@@ -61,13 +54,11 @@ data <- data %>%
 avg_engagement <- mean(data$engagement, na.rm = TRUE)
 mean_length <- mean(data$video_length, na.rm = TRUE)
 total_responses <- nrow(data)
-
-cat("<ul>")
-cat(paste("<li><b>Average engagement score:</b>", round(avg_engagement, 2), "</li>"))
-cat(paste("<li><b>Average video length:</b>", round(mean_length, 1), "seconds</li>"))
-cat(paste("<li><b>Total observations:</b>", total_responses, "</li>"))
-cat("</ul>")
 ```
+
+- Average engagement score: **`r round(avg_engagement, 2)`**  
+- Average video length: **`r round(mean_length, 1)` seconds**  
+- Total observations: **`r total_responses`**
 
 ---
 
@@ -115,12 +106,7 @@ print(
 
 ```{r}
 high_engagement_pct <- mean(data$engagement >= 4, na.rm = TRUE) * 100
-
-cat(paste(
-  "On average, videos received an engagement score of",
-  round(avg_engagement, 2),
-  ". Approximately",
-  round(high_engagement_pct, 1),
-  "% of videos achieved high engagement (scores of 4 or 5)."
-))
 ```
+
+On average, videos received an engagement score of **`r round(avg_engagement, 2)`**.  
+Approximately **`r round(high_engagement_pct, 1)`%** of videos achieved high engagement (scores of 4 or 5).
